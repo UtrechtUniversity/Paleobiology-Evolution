@@ -2,6 +2,8 @@
 title: "Global plant diversity"
 author: "Rike Wagner-Cremer, Iris Kuipers and Emilia Jarochowska"
 format: html
+execute: 
+  eval: false
 ---
 
 ## Objectives

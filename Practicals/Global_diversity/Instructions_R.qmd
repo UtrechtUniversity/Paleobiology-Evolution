@@ -2,6 +2,8 @@
 title: "Global plant diversity"
 author: "Rike Wagner-Cremer, Iris Kuipers and Emilia Jarochowska"
 format: html
+execute: 
+  eval: false
 ---
 
 ```{r setup}
@@ -19,11 +21,17 @@ Make a new folder for files related to this practical. In R Studio, choose `File
 After this practical, you will be able to:
 
 *paleobiology skills*
+
 - Create a diversity (richness) plot for a given taxon
+
 - Explain the limitations of fossil data in calculating past diversity
+
 - Assess how factors such as sampling effort, taxonomic and temporal resolution affect diversity analyses
+
 *data skills*
+
 - read in functions and apply them to new datasets
+
 - present several variables in one plot
 
 ### Analysing Pteridophyta
