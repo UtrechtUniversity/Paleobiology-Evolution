@@ -4,6 +4,22 @@ Target audience: University students (BSc, MSc), interested laypeople, scientist
 
 Discipline: Earth sciences, geoscience, evolutionary biology
 
+## How to run
+
+### Python
+
+Practicals using Python have their individual `pyproject.toml` files which you can use to set up the environment for that given practical. I used `poetry`:
+
+```shell
+poetry shell
+```
+
+and from this virtual environment, run the code in a Python interpreter or IDE. 
+
+### R
+
+Use the `.Rproj` file in the folder of the practical or create a new one in R Studio.
+
 ### How to contribute 
 If you would like to contribute to this OER, please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
