@@ -1,0 +1,47 @@
+---
+title: "Global plant diversity"
+author: "Rike Wagner-Cremer, Iris Kuipers and Emilia Jarochowska"
+format: html
+---
+
+## Objectives
+
+After this practical, you will be able to:
+
+*paleobiology skills*
+- Create a diversty (richness) plot for a given taxon
+- Explain the limitations of fossil data in calculating past diversity
+- Assess how factors such as sampling effort, taxonomic and temporal resolution affect diversity analyses
+*data skills*
+- read in functions and apply them to new datasets
+- present several variables in one plot
+
+### Analysing Pteridophyta
+
+In this practical, you will analyse [Pteridophyta](https://en.wikipedia.org/wiki/Pteridophyte), [Pinophyta](https://en.wikipedia.org/wiki/Conifer) and [Magnoliophyta](https://en.wikipedia.org/wiki/Flowering_plant). The examples below will guide you through the analysis for Pteridophyta. Afterwards, you will do the same analysis for the other two divisions.
+
+## Downloading data from the Paleobiology Database
+
+You can download datasets using [the web interface](https://paleobiodb.org/classic/displayDownloadGenerator). You can click through the options, but that is not very reproducible: chances are different people would choose different options. It is safer to share [a link with the details of the query to the database](https://paleobiodb.org/data1.2/occs/list.csv?base_name=Pteridophyta&taxon_reso=species&max_ma=540&min_ma=0). Download the linked file, rename it to `Pteridophyta_occurrences.csv` and place it in the project folder.
+
+```{python}
+import pandas as pd
+Pteridophyta = pd.read_csv("Pteridophyta_occurrences.csv")
+```
+
+Take a look at the data you have downloaded. What are the rows? Where is the age of each fossil? Where was it found?
+
+## 1. Genus richness through time	
+
+Make a graph showing the genus richness of Pteridophyta over time. If you looked at the dataset, you will see that some fossils are identified at the species and some at the genus level. Can you think of a reason for it?
+
+### 2. How to deal with records at different taxonomic levels?
+
+A lot of the time fossils cannot be identified to the species level. Also the concept of species in some groups is not clear. So many analyses rely on the genus level.
+
+Look into the dataframe with the occurrences. Some are observations at the species level, some at the genus level. If you want to analyze richness at the genus level, you have to *somehow* include also those occurrences which had been made at the species level and discard the species name. E.g. one of the occurrences is *Metaclepsydropsis duplex*. You still want to count it, but as *Metaclepsydropsis*.
+And you still have to consider that some occurrences are of different taxonomic ranks!
+
+```{python}
+Pteridophyta[c].unique()
+```
