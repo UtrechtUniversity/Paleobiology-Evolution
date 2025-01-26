@@ -1,7 +1,7 @@
 ---
 title: "Global plant diversity"
 author: "Rike Wagner-Cremer, Iris Kuipers and Emilia Jarochowska"
-format: docx
+format: html
 ---
 
 ```{r setup}
@@ -26,13 +26,13 @@ After this practical, you will be able to:
 - read in functions and apply them to new datasets
 - present several variables in one plot
 
-## Downloading data from the Paleobiology Database
-
-You can download datasets using the web interface or by sending a direct query to the server using the database's API. The latter you can do using a script, this way you don't need to remember what to click. There are ready-made functions which make it easy to download data directly from your script. In the first example, you will use the function `pbdb_occurrences` from the package [`paleobioDB`](https://docs.ropensci.org/paleobioDB/index.html) by Varela et al. (2015). You need to install this package first.
-
 ### Analysing Pteridophyta
 
 In this practical, you will analyse [Pteridophyta](https://en.wikipedia.org/wiki/Pteridophyte), [Pinophyta](https://en.wikipedia.org/wiki/Conifer) and [Magnoliophyta](https://en.wikipedia.org/wiki/Flowering_plant). The examples below will guide you through the analysis for Pteridophyta. Afterwards, you will do the same analysis for the other two divisions.
+
+## Downloading data from the Paleobiology Database
+
+You can download datasets using [the web interface](https://paleobiodb.org/classic/displayDownloadGenerator) or by sending a direct query to the server using the database's API. The latter you can do using a script, this way you don't need to remember what to click. There are ready-made functions which make it easy to download data directly from your script. In the first example, you will use the function `pbdb_occurrences` from the package [`paleobioDB`](https://docs.ropensci.org/paleobioDB/index.html) by Varela et al. (2015). You need to install this package first.
 
 ```{r download the occurrences}
 Pteridophyta <- pbdb_occurrences(
@@ -41,13 +41,6 @@ Pteridophyta <- pbdb_occurrences(
   vocab = "pbdb",
   limit = "all"
 )
-```
-
-If you're doing it in Python, you need to download the data through [the web interface](https://paleobiodb.org/data1.2/occs/list.csv?base_name=Pteridophyta&taxon_reso=species&max_ma=540&min_ma=0). Rename the file to `Pteridophyta_occurrences.csv` and place it in the project folder.
-
-```{python}
-import pandas as pd
-Pteridophyta = pd.read_csv("Pteridophyta_occurrences.csv")
 ```
 
 Take a look at the data you have downloaded. What are the rows? Where is the age of each fossil? Where was it found?
@@ -62,105 +55,6 @@ pbdb_richness(Pteridophyta,
               rank = "species", 
               temporal_extent = c(0, 540), 
               res = 20)
-```
-
-There is no dedicated package for manipulating PBDB data in Python but here's a function that does nearly the same thing. 
-
-```{python}
-# First you need to deal with the fact that some records are not at the genus level. This function extracts genus names from species names.
-
-def species_to_genera(df):
-    """
-    Add a new column 'genus_name' to the df:
-    If 'accepted_rank' is 'genus, 'genus_name' is same as 'accepted_name'
-    Else 'genus_name' is the first word of 'accepted_name'
-
-    Parameters:
-        df (pd.DataFrame): Input PBDB df with columns 'accepted_rank' and 'accepted_name'.
-
-    Returns:
-        pd.DataFrame: df with the new column 'genus_name'.
-    """
-
-    df['genus_name'] = df.apply(
-        lambda row: row['accepted_name'].split()[0] if row['accepted_rank'] != "genus" else row['accepted_name'], 
-        axis=1
-    )
-    return df
-```
-
-Now you can apply this function to your dataset:
-
-```{python}
-Pteridophyta = species_to_genera(Pteridophyta)
-```
-
-Now that genera are extracted, you can calculate how many genera occur at each time bin, with time bins being specified by you:
-
-```{python}
-import numpy as np
-
-def pbdb_richness(df, bin_size):
-    """
-    Generate a dataframe with the number of genera in each time bin.
-
-    Parameters:
-        df (pd.DataFrame): Input dataframe with columns: 'genus_name', 'min_ma', 'max_ma'.
-        bin_size (float): Duration of each time bin in Ma.
-
-    Returns:
-        pd.DataFrame: df with columns: 'bin_start', 'bin_end', 'num_genera'.
-    """
-
-    max_ma = df['max_ma'].max()
-    min_ma = df['min_ma'].min()
-    bins = np.arange(max_ma, min_ma - bin_size, -bin_size)
-    bin_edges = [(bins[i], bins[i+1]) for i in range(len(bins) - 1)]
-    
-    result = []
-    
-    for bin_start, bin_end in bin_edges:
-        genera_in_bin = df[
-            (df['max_ma'] >= bin_end) &  
-            (df['min_ma'] <= bin_start)  
-        ]
-        
-        unique_genera = genera_in_bin['genus_name'].nunique()
-        
-        result.append({
-            'bin_start': bin_start,
-            'bin_end': bin_end,
-            'num_genera': unique_genera
-        })
-    
-    return pd.DataFrame(result)
-```
-
-Apply this function:
-
-```{python}
-Pteridophyta_rich = pbdb_richness(Pteridophyta, 20)
-```
-
-And plot the output:
-
-```{python}
-import matplotlib.pyplot as plt
-
-# Create the bin_mid column (midpoint of each time bin)
-Pteridophyta_rich['bin_mid'] = (Pteridophyta_rich['bin_start'] + Pteridophyta_rich['bin_end']) / 2
-
-
-plt.figure()
-plt.plot(Pteridophyta_rich['bin_mid'], Pteridophyta_rich['num_genera'], marker='o', linestyle='-', color='blue', label='Genera count')
-
-plt.gca().invert_xaxis()  # Reverse x-axis for geological time (older to younger)
-plt.xlabel('Time (Ma)', fontsize=12)
-plt.ylabel('Number of genera', fontsize=12)
-plt.title('Pteridophyta generic richness', fontsize=14)
-plt.legend()
-plt.grid(True)
-plt.show()
 ```
 
 What happens if you change the parameter `res` (temporal resolution)? How do you decide which resolution is the best?
@@ -208,20 +102,18 @@ Now you can extract genus names from those names which also contain species and 
 
 ```{r function to extract genera from species}
 species_to_genera <- function(df) {
-  df <- df %>%
-  mutate(
-    genus_name = ifelse(
-      accepted_rank != "genus",
-      gsub(" .*", "", accepted_name),
-      accepted_name
-    )
+  df$genus_name <- ifelse(
+    df$accepted_rank != "genus",
+    gsub(" .*", "", df$accepted_name),
+    df$accepted_name
   )
+  return(df)
 }
 ```
 
 Now that the function is in memory, you can use it by applying it to the dataset:
 
-```{r extrat genera from Pteridophyta}
+```{r extract genera from Pteridophyta}
 Pteridophyta <- species_to_genera(Pteridophyta)
 ```
 
