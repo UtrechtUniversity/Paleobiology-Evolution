@@ -19,7 +19,7 @@ Make a new folder for files related to this practical. In R Studio, choose `File
 After this practical, you will be able to:
 
 *paleobiology skills*
-- Create a diversty (richness) plot for a given taxon
+- Create a diversity (richness) plot for a given taxon
 - Explain the limitations of fossil data in calculating past diversity
 - Assess how factors such as sampling effort, taxonomic and temporal resolution affect diversity analyses
 *data skills*
@@ -80,7 +80,7 @@ Try to add the other groups on your own. You can use the parameter `add` of the 
 
 ## 2. How to deal with records at different taxonomic levels?
 
-A lot of the time fossils cannot be identifed to the species level. Also the concept of species in some groups is not clear. So many analyses rely on the genus level.
+A lot of the time fossils cannot be identified to the species level. Also the concept of species in some groups is not clear. So many analyses rely on the genus level.
 
 Look into the dataframe with the occurrences. Some are observations at the species level, some at the genus level. If you want to analyze richness at the genus level, you have to *somehow* include also those occurrences which had been made at the species level and discard the species name. E.g. one of the occurrences is *Metaclepsydropsis duplex*. You still want to count it, but as *Metaclepsydropsis*.
 And you still have to consider that some occurrences are of different taxonomic ranks!
@@ -121,7 +121,7 @@ So now your analysis will use all the available records which *include* informat
 
 ## 3. How precisely do we know the age of a fossil occurrence?
 
-To understand the nature of occurrence data, check in the dataframe how age information is provided. Which variables contain it? What is the average, minimal and maximal time span accross the occurrences? In other words, how *precise* is the age information for each occurrence?
+To understand the nature of occurrence data, check in the dataframe how age information is provided. Which variables contain it? What is the average, minimal and maximal time span across the occurrences? In other words, how *precise* is the age information for each occurrence?
 
 ```{r function for calculating duration}
 calculate_duration <- function(df, max_ma, min_ma, occ_duration) {
@@ -159,7 +159,7 @@ You will enocounter the problem: what time should you assign the occurrence to? 
 
 ```{r select a genus to plot}
 selected_genus <- "Deltoidospora"
-Deltoidospora_df <- Pteridophyta[Pteridophyta$genus == selected_genus, ]
+Deltoidospora_df <- Pteridophyta[Pteridophyta$genus_name == selected_genus, ]
 ```
 
 Function for plotting age ranges:
@@ -212,7 +212,7 @@ The answer is: [interpolation](https://en.wikipedia.org/wiki/Interpolation). Loo
 
 In interpolation, the time axis is divided into even intervals and the *density* of occurrences calculated from the durations of each occurrence is sampled so that you have one value of richness at each interval. 
 
-So what is an honest temporal resolution at which you should analyse richness? Go back to chapter 3 above and find the **average duration** of an occurrence in your dataset. This is a reasonable candidate for temporal resultion of your analysis. Is it higher or lower than what you have used in your first plot?
+So what is an honest temporal resolution at which you should analyse richness? Go back to chapter 3 above and find the **average duration** of an occurrence in your dataset. This is a reasonable candidate for temporal resolution of your analysis. Is it higher or lower than what you have used in your first plot?
 
 ### 4.b. Dealing with sampling issues
 
@@ -237,7 +237,7 @@ Is this plot showing sampled in bin richness or range-through richness?
 
 ## 5. Sampled in bin richness
 
-You could calculate sampled from the dataset you downloaded, but it would involve a lot of coding. The Paleobiology Database has tools to perform common calculations for you.
+You could calculate sampled in bin richness from the dataset you downloaded, but it would involve a lot of coding. The Paleobiology Database has tools to perform common calculations for you.
 In the Download page you can select the type of data you want to download. To get diversity data for Pteridophyta at the genus level and the temporal resolution of a geochronological age, use [this link](https://paleobiodb.org/data1.2/occs/diversity.csv?base_name=Pteridophyta&count=genera). Save the resulting file the *project folder* where you are carrying out this analysis.
 **Do not open it in Excel** as this program can distort some information.
 
