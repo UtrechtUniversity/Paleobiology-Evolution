@@ -7,7 +7,6 @@ execute:
 ---
 
 ```{r setup}
-#| include: false
 library(paleobioDB)
 library(dplyr)
 ```
