@@ -20,10 +20,14 @@ and from this virtual environment, run the code in a Python interpreter or IDE.
 
 Use the `.Rproj` file in the folder of the practical or create a new one in R Studio.
 
-### How to contribute 
+## How to contribute 
+
 If you would like to contribute to this OER, please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
+The instructions are written in [Quarto](https://quarto.org/), so edit the `.Rmd` files and render to your favorite format using `quarto render` or R Studio. For rendering files with Python code, R Studio might fail unless some extra magic is done, so command line is safer.
+
 ### License
+
 Please see [LICENSE.md](LICENSE.md)
 
 ### Maintainer
@@ -37,4 +41,5 @@ Web page: [www.uu.nl/staff/EBJarochowska](https://www.uu.nl/staff/EBJarochowska)
 ORCID: [0000-0001-8937-9405](https://orcid.org/0000-0001-8937-9405)
 
 ### Copyright
+
 Copyright 2025 Utrecht University
