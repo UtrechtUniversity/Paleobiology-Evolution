@@ -154,13 +154,27 @@ How can you make this graph more attractive? Does it make sense to check pterido
 
 ## 2. How precisely do we know the age of a fossil occurrence?
 
-To understand the nature of occurrence data, check in the dataframe how age information is provided. Which variables contain it? What is the average, minimal and maximal time span accross the occurrences? In other words, how *precise* is the age information for each occurrence?
+To understand the nature of occurrence data, check in the dataframe how age information is provided. Which variables contain it? 
+
+Calculate the duration of each occurrence by creating a new variable named `occ_duration`:
 
 ```{python}
-# write code for this
+def calculate_duration(df):
+    df['occ_duration'] = df['max_ma'] - df['min_ma']
+    return df
+```
+
+Once you have this variable, find out what is the average, minimal and maximal time span of all occurrences? In other words, how *precise* is the age information for each occurrence?
+
+Apply the function to the dataset:
+
+```{python}
+Pteridophyta = calculate_duration(Pteridophyta)
 ```
 
 What is the average time span of an occurrence in the dataset? Does it mean the fossil lived for so long? Why are some durations so extremely long, i.e. having very low precision? If you were to cull the dataset to eliminate the most imprecisely dated occurrences, what precision would you accept as good?
+
+Bonus exercise (we don't provide the code for it but it is easy to find in [`matplotlib` documentation](https://matplotlib.org/stable/gallery/statistics/hist.html)): make a histogram of occurrence durations.
 
 ## 3. How is richness calculated?
 
@@ -178,7 +192,17 @@ Deltoidospora_df = Pteridophyta.loc[Pteridophyta['genus_name'] == selected_genus
 Function for plotting age ranges:
 
 ```{python}
-# write code for this
+def plot_age_ranges(df):
+    fig, ax = plt.subplots()
+
+    for _, row in df.iterrows():
+        ax.hlines(y=row['occ_duration'], xmin=row['min_ma'], xmax=row['max_ma'])
+
+    ax.set_xlabel('Age [Ma]')
+    ax.set_ylabel('Occurrence')
+    ax.set_title('Distribution of occurrences')
+
+    plt.show()
 ```
 
 What can you see on this plot? Are the occurrences well resolved in terms of time or poorly? Are there any occurrences with suspicious ages, e.g. when pteridophytes didn't exist?
