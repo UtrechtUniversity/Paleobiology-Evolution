@@ -6,21 +6,37 @@ execute:
   eval: false
 ---
 
+In this exercise we like to explore the diversity of the major groups of vascular plants through time. An early attempt at describing it has been made by the super-prolific giant of (paleo)botany, Karl Niklas. You will hear about him in this course again. 
+
+![Large-scale changes in diversity of tracheophytes at the species- and family-level (upper and lower panels, respectively) recorded per epoch through the Phanerozoic.](img/Niklas_1.jpg)
+
+We are asking the question if the data in PBDB is complete enough to obtain the same overall trend. Here we will ignore the early vascular plants and focus on Pteridophytes, Gymnosperms and Angiosperms.
+
 ## Objectives
 
 After this practical, you will be able to:
 
 *paleobiology skills*
+
 - Create a diversity (richness) plot for a given taxon
+
 - Explain the limitations of fossil data in calculating past diversity
+
 - Assess how factors such as sampling effort, taxonomic and temporal resolution affect diversity analyses
+
 *data skills*
+
 - read in functions and apply them to new datasets
+
 - present several variables in one plot
 
 ### Analysing Pteridophyta
 
 In this practical, you will analyse [Pteridophyta](https://en.wikipedia.org/wiki/Pteridophyte), [Pinophyta](https://en.wikipedia.org/wiki/Conifer) and [Magnoliophyta](https://en.wikipedia.org/wiki/Flowering_plant). The examples below will guide you through the analysis for Pteridophyta. Afterwards, you will do the same analysis for the other two divisions.
+
+### Requirements
+
+You will need to install `pandas`, `matplotlib` and `numpy`. Install them using `pip`, `conda` or any other method you are familiar with.
 
 ## Downloading data from the Paleobiology Database
 
@@ -135,7 +151,6 @@ import matplotlib.pyplot as plt
 # Create the bin_mid column (midpoint of each time bin)
 Pteridophyta_rich['bin_mid'] = (Pteridophyta_rich['bin_start'] + Pteridophyta_rich['bin_end']) / 2
 
-
 plt.figure()
 plt.plot(Pteridophyta_rich['bin_mid'], Pteridophyta_rich['num_genera'], marker='o', linestyle='-', color='blue', label='Genera count')
 
@@ -218,9 +233,9 @@ The answer is: [interpolation](https://en.wikipedia.org/wiki/Interpolation). Loo
 
 In interpolation, the time axis is divided into even intervals and the *density* of occurrences calculated from the durations of each occurrence is sampled so that you have one value of richness at each interval. 
 
-So what is an honest temporal resolution at which you should analyse richness? Go back to chapter 3 above and find the **average duration** of an occurrence in your dataset. This is a reasonable candidate for temporal resultion of your analysis. Is it higher or lower than what you have used in your first plot?
+So what is an honest temporal resolution at which you should analyse richness? Go back to chapter 2 above and find the **average duration** of an occurrence in your dataset. This is a reasonable candidate for temporal resolution of your analysis. Is it higher or lower than what you have used in your first plot?
 
-### 4.b. Dealing with sampling issues
+### 3.b. Dealing with sampling issues
 
 In the example where you saw occurrence durations of *Deltoidospora*, there were intervals when it had not been recorded. But of course it must have existed on Earth. There is a difference between genera that have been entered into the database and genera that are not in the database at that time, but should have been present at that time. There are terms specific to these two situations:
 
@@ -233,7 +248,7 @@ Make a plot of richness of *Deltoidospora* using the function `pbdb_richness` an
 
 Is this plot showing sampled in bin richness or range-through richness?
 
-## 5. Sampled in bin richness
+## 4. Sampled in bin richness
 
 You could calculate which genera should be present but are not sampled from the dataset you downloaded, but it would involve a lot of coding. The Paleobiology Database has tools to perform common calculations for you.
 In the Download page you can select the type of data you want to download. To get diversity data for Pteridophyta at the genus level and the temporal resolution of a geochronological age, use [this link](https://paleobiodb.org/data1.2/occs/diversity.csv?base_name=Pteridophyta&count=genera). Save the resulting file the *project folder* where you are carrying out this analysis.
@@ -246,6 +261,7 @@ Pteridophyta_div = pd.read_csv("pbdb_data.csv")
 Look at this new dataset. What are rows? What columns are provided?
 
 There are a few columns with mysterious names. If you **really** need to know what these symbols are, you can find it in the rather technical article by [Foote (2000)](https://www.cambridge.org/core/services/aop-cambridge-core/content/view/7FE12B43106FC20C9AFC4031F72A56F9/S0094837300026890a.pdf/origination-and-extinction-components-of-taxonomic-diversity-general-problems.pdf). For this practical you are concerned with the column `X_bt`, which is the number of taxa *inferred* to range though (i.e. which existed but had not been sampled).
+To get range-through richness, add the variables `X_bt`, `sampled_in_bin` and `implied_in_bin`.
 
 Make a plot of Pteridophyta genus richness, comparing sampled in bin and range through richness. Use the mid-point of each age as the time coordinate.
 
@@ -263,9 +279,26 @@ Pteridophyta_div = calc_midpoint(Pteridophyta_div)
 
 Plot the results:
 
-
 ```{python}
-# write code for this
+plt.figure()
+plt.plot(Pteridophyta_div['age'], 
+Pteridophyta_div['sampled_in_bin']+Pteridophyta_div['X_bt']+Pteridophyta_div['implied_in_bin'], 
+marker='o', linestyle='-', 
+color='red', 
+label='Range through richness')
+plt.plot(Pteridophyta_div['age'], 
+Pteridophyta_div['sampled_in_bin'], 
+marker='o', linestyle='--', 
+color='blue', 
+label='Sampled in bin richness')
+
+plt.gca().invert_xaxis()  # Reverse x-axis for geological time (older to younger)
+plt.xlabel('Time (Ma)', fontsize=12)
+plt.ylabel('Number of genera', fontsize=12)
+plt.title('Pteridophyta generic richness', fontsize=14)
+plt.legend()
+plt.grid(True)
+plt.show()
 ```
 
 ## 6. Calculate the genus richness for Pinophyta and Magnoliophyta
