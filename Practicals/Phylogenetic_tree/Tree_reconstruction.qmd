@@ -63,16 +63,19 @@ start_tree <- ape::nj(dm)
 plot(start_tree)
 ```
 
-Fitting a maximum likelihood tree requires assuming a model of character evolution, equivalent to a sequence evolution model. Only we don't really know how likely are transitions between different states of each character. So the simplest model is that all transitions are equally likely. One such model is the *Mk* model, which allows each character to have any number of states and the states are unordered, i.e. all states can switch to each other state with equal probability.
+For unordered morphometric data, the option `model="ER+ASC"` should be used.
 
-![Examples of discrete characters with (A) k = 2, (B) k = 3, and (C) k = 4 states. By L. Harmon, distributed under the CC-BY-4.0 license.](img/figure7-3.png)
+- ER: equal rates, all transitions occur at the same rate
 
-Assuming the *Mk* model, you can estimate the Maximum Likelihood tree for your character matrix. The JC model (equivalent to the Mk model) is the default, so if you do not specify a model, this is the one that will be used:
+- ASC: ascertainment bias correction (Lewis 2001) corrects for the fact that there are no constant sites (as is mostly the case with morphometric data); otherwise the branch lengths may be overestimated
 
 ```{r}
-fit <- phangorn::pml(tree = start_tree, 
-           data = mm_pd)
-plot(fit)
+ml_nni <- phangorn::pml_bb(mm_pd,
+             start = start_tree,
+             model="ER+ASC", 
+             rearrangement = "NNI")
+plot(ml_nni,
+     main = "NNI estimation")
 ```
 
 Is this tree good? Can you see any polytomies?
@@ -80,29 +83,11 @@ Is this tree good? Can you see any polytomies?
 Display a summary of the tree estimate and verify that the right model has been used:
 
 ```{r}
-fit
+ml_nni
 ```
 
-Optimize tree
-
 ```{r}
-opt_tree <- phangorn::optim.pml(fit, 
-                                optNni = TRUE, 
-                                optBf = FALSE, 
-                                optQ = FALSE)
-```
-What moves have been used to search the tree space? 
-
-View the results:
-
-```{r}
-plot(opt_tree$tree)
-```
-
-You can choose a “stochastic” or “ratchet” (likelihood ratchet) tree rearrangement algorithm. Using either of them is slower than the default method NNI. Try it yourself:
-
-```{r}
-fitJC <- phangorn::optim.pml(fit, 
-                             rearrangement = "stochastic")
-plot(fitJC$tree, main = "JC, stochastic rearrangement")
+rooted_ml_tree <- root(tree_ml, "Collohmannia_johnstoni", resolve.root = TRUE,
+                             edgelabel=TRUE)
+rooted_ml_tree <- pretty_root(rooted_ml_tree)
 ```
