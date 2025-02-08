@@ -1,0 +1,20 @@
+#NEXUS
+[Data written by write.nexus.data.R, Sat Feb  8 14:35:05 2025]
+BEGIN DATA;
+  DIMENSIONS NTAX=11 NCHAR=8;
+  FORMAT DATATYPE=STANDARD MISSING=? GAP=- INTERLEAVE=NO symbols="0123456789";
+  MATRIX
+    Brissus             21012020
+    Dendraster          22020010
+    Diadema             31100130
+    Echinarachnius      32121010
+    Echinodiscus        13021011
+    Echinolampas        31022030
+    Eucidaris           31100130
+    Leodia              13021021
+    Nucleolites         11012030
+    Rotula              12031021
+    Toxaster            11012030
+  ;
+END;
+

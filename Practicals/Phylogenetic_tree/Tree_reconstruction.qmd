@@ -1,0 +1,108 @@
+---
+title: "Phylogenetic tree of sea urchins"
+author: "Emilia Jarochowska"
+format: pdf
+---
+
+## Preparation
+
+1. Create a new project in R Studio in a dedicated folder for this practical, using File -> New Project...
+
+2. In the folder where your project is located, create a sub-folder `data`
+
+3. Save the character matrix as `character_matrix.csv` in the `data` folder
+
+4. Install the packages `phangorn` and `ape`. You will be likely asked to install some additional packages ("dependencies") - choose "yes".
+
+5. Create a new script using File -> New File -> R Script, where you will put all the steps of the analysis. Save it in the project folder.
+
+## Analysis
+
+```{r}
+library(phangorn)
+library(ape)
+```
+
+Read your character matrix into R and convert it into the Nexus format.
+
+*If you created your file using Excel on a system with Dutch language settings, your `csv` file likely uses a colon (;) instead of a comma (,) to separate columns. That is because in Dutch comma is used as a decimal separator, so to separate columns you need a different character. That is why the option `sep=";"` is used in this script. If your file uses a different character to separate columns, change the code accordingly.*
+
+```{r}
+Character_matrix <- read.csv(file="data/character_matrix.csv", 
+                             header=T, 
+                             sep=";", 
+                             colClasses=rep("character", 8), # if you have 8 characters
+                             row.names = 1) 
+```
+
+Convert the table into a character matrix format understood by `phangorn`:
+
+```{r}
+mm_pd <- phangorn::phyDat(as.matrix(Character_matrix), 
+                          type = "USER", 
+                          levels = 0:8)
+```
+
+Generate a distance matrix using the Hamming distance and examine the output:
+
+```{r}
+dm = phangorn::dist.hamming(mm_pd)
+dm
+```
+
+Can you read from the distance matrix:
+
+1. Which two taxa are the closest to each other?
+
+2. Which ones are equally distant?
+
+From the distance matrix, create a starting tree using the Neighbor-Joining method:
+
+```{r}
+start_tree <- ape::nj(dm)
+plot(start_tree)
+```
+
+Fitting a maximum likelihood tree requires assuming a model of character evolution, equivalent to a sequence evolution model. Only we don't really know how likely are transitions between different states of each character. So the simplest model is that all transitions are equally likely. One such model is the *Mk* model, which allows each character to have any number of states and the states are unordered, i.e. all states can switch to each other state with equal probability.
+
+![Examples of discrete characters with (A) k = 2, (B) k = 3, and (C) k = 4 states. By L. Harmon, distributed under the CC-BY-4.0 license.](img/figure7-3.png)
+
+Assuming the *Mk* model, you can estimate the Maximum Likelihood tree for your character matrix. The JC model (equivalent to the Mk model) is the default, so if you do not specify a model, this is the one that will be used:
+
+```{r}
+fit <- phangorn::pml(tree = start_tree, 
+           data = mm_pd)
+plot(fit)
+```
+
+Is this tree good? Can you see any polytomies?
+
+Display a summary of the tree estimate and verify that the right model has been used:
+
+```{r}
+fit
+```
+
+Optimize tree
+
+```{r}
+opt_tree <- phangorn::optim.pml(fit, 
+                                optNni = TRUE, 
+                                optBf = FALSE, 
+                                optQ = FALSE)
+```
+What moves have been used to search the tree space? 
+
+View the results:
+
+```{r}
+plot(opt_tree$tree)
+```
+
+You can choose a “stochastic” or “ratchet” (likelihood ratchet) tree rearrangement algorithm. Using either of them is slower than the default method NNI. Try it yourself:
+
+```{r}
+fitJC <- phangorn::optim.pml(fit, 
+                             rearrangement = "stochastic")
+plot(fitJC$tree, main = "JC, stochastic rearrangement")
+```
