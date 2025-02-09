@@ -265,7 +265,7 @@ Pteridophyta_div <- read.csv(file = "pbdb_data.csv",
 
 Look at this new dataset. What are rows? What columns are provided?
 
-There are a few columns with mysterious names. If you **really** need to know what these symbols are, you can find it in the rather technical article by [Foote (2000)](https://www.cambridge.org/core/services/aop-cambridge-core/content/view/7FE12B43106FC20C9AFC4031F72A56F9/S0094837300026890a.pdf/origination-and-extinction-components-of-taxonomic-diversity-general-problems.pdf). For this practical you are concerned with the column `X_bt`, which is the number of taxa *inferred* to range though (i.e. which existed but had not been sampled).
+There are a few columns with mysterious names. If you **really** need to know what these symbols are, you can find it in the rather technical article by [Foote (2000)](https://www.cambridge.org/core/services/aop-cambridge-core/content/view/7FE12B43106FC20C9AFC4031F72A56F9/S0094837300026890a.pdf/origination-and-extinction-components-of-taxonomic-diversity-general-problems.pdf). For this practical you are concerned with the column `X_bt`, which is the number of taxa *inferred* to range though (i.e. which existed but had not been sampled). To get range-through richness, add the variables `X_bt`, `sampled_in_bin` and `implied_in_bin`.
 
 Make a plot of Pteridophyta genus richness, comparing sampled in bin and range through richness. Use the mid-point of each age as the time coordinate.
 

@@ -1,7 +1,7 @@
 ---
 title: "Global plant diversity"
 author: "Rike Wagner-Cremer, Iris Kuipers and Emilia Jarochowska"
-format: html
+format: docx
 execute: 
   eval: false
 ---
@@ -37,6 +37,14 @@ In this practical, you will analyse [Pteridophyta](https://en.wikipedia.org/wiki
 ### Requirements
 
 You will need to install `pandas`, `matplotlib` and `numpy`. Install them using `pip`, `conda` or any other method you are familiar with.
+
+Some tips:
+
+- When copying the code, remember that Python is very sensitive to whitespace (indentation): if you skip a space or tab, it may break the code.
+
+- Don't run the code directly in Python console (also called REPL). Write it in a script, e.g. in Spyder or Jupiter Notebook, so you can go back to previous commands. It is good practice (e.g. for a thesis, but also at a workplace) to keep a record of your analysis in a saved script. 
+
+- In this document, `import` statements are listed only the first time a package is used. If you runt the commands in a different order, you might need to add the `import` statement somewhere else
 
 ## Downloading data from the Paleobiology Database
 
@@ -313,4 +321,6 @@ You now understand the nature of fossil occurrence data. It has gaps and the age
 
 - Calculate the average duration across genus occurrences in both groups. If they are different, why might it be?
 
+## References
 
+- Niklas, Karl J. "[Patterns of vascular plant diversification in the fossil record: proof and conjecture.](https://www.jstor.org/stable/pdf/2399465.pdf)" Annals of the Missouri Botanical Garden (1988): 35-54.
