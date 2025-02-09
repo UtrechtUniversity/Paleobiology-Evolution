@@ -1,3 +1,7 @@
+# Rendered files
+*.docx
+*.pdf
+
 # History files
 .Rhistory
 .Rapp.history
