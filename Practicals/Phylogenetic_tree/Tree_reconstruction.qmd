@@ -1,7 +1,9 @@
 ---
 title: "Phylogenetic tree of sea urchins"
 author: "Emilia Jarochowska"
-format: pdf
+format: docx
+execute: 
+  eval: false
 ---
 
 ## Preparation
@@ -16,14 +18,14 @@ format: pdf
 
 5. Create a new script using File -> New File -> R Script, where you will put all the steps of the analysis. Save it in the project folder.
 
-## Analysis
+## Tree estimation
 
 ```{r}
 library(phangorn)
 library(ape)
 ```
 
-Read your character matrix into R and convert it into the Nexus format.
+Read your character matrix into R:
 
 *If you created your file using Excel on a system with Dutch language settings, your `csv` file likely uses a colon (;) instead of a comma (,) to separate columns. That is because in Dutch comma is used as a decimal separator, so to separate columns you need a different character. That is why the option `sep=";"` is used in this script. If your file uses a different character to separate columns, change the code accordingly.*
 
@@ -43,6 +45,8 @@ mm_pd <- phangorn::phyDat(as.matrix(Character_matrix),
                           levels = 0:8)
 ```
 
+### 1. Distance matrix
+
 Generate a distance matrix using the Hamming distance and examine the output:
 
 ```{r}
@@ -56,12 +60,27 @@ Can you read from the distance matrix:
 
 2. Which ones are equally distant?
 
+### 2. Make a starting tree
+
 From the distance matrix, create a starting tree using the Neighbor-Joining method:
 
 ```{r}
 start_tree <- ape::nj(dm)
 plot(start_tree)
 ```
+
+
+```{r rooting the tree}
+tree_start <- start_tree$tree
+outgroup <- "Echinarachnius" # just an example
+rooted_start_tree <- ape::root(start_tree, 
+                       outgroup, 
+                       resolve.root = TRUE,
+                       edgelabel=TRUE)
+plot(rooted_start_tree) 
+```
+
+### 3. Search for the best tree
 
 For unordered morphometric data, the option `model="ER+ASC"` should be used.
 
@@ -78,16 +97,55 @@ plot(ml_nni,
      main = "NNI estimation")
 ```
 
-Is this tree good? Can you see any polytomies?
+Is this tree good? Can you see any **polytomies**?
 
 Display a summary of the tree estimate and verify that the right model has been used:
 
 ```{r}
 ml_nni
 ```
+### 4. Revise the character coding
+
+If two different taxa are not well resolved in your tree, it might be that you did not choose your characters well. Or perhaps your characters were uninformative? You can go back to your character matrix and correct the coding. 
+
+- What makes a good character? 
+
+- Do your characters reflect **synapomorphies**? 
+
+- Is your tree consistent with what is known about stratigraphic ranges of the genera? If not, does it mean it is wrong?
+
+It may be that you are happy with your tree, in that case you don't need to change anything. Maybe you have a good eye for phylogeny!
+
+### Visualize the tree
+
+There are various conventions for tree plotting. The package `ape` gives you a lot of customization options. This solution is proposed in [one of its vignettes](https://cran.r-project.org/web/packages/ape/vignettes/DrawingPhylogenies.pdf):
+
+```{r define a function to plot tree axes}
+plot_axes <- function() {
+ col <- "blue"
+ for (i in 1:2)
+ axis(i, col = col, col.ticks = col, col.axis = col, las = 1)
+ box(lty = "19")
+ }
+```
+
+Use this function to make a plot comparing different conventions:
 
 ```{r}
-rooted_ml_tree <- root(tree_ml, "Collohmannia_johnstoni", resolve.root = TRUE,
-                             edgelabel=TRUE)
-rooted_ml_tree <- pretty_root(rooted_ml_tree)
+layout(matrix(1:4, 2, 2, byrow = TRUE))
+par(xpd = TRUE,
+    mar = c(2.5, 2.5, 1, 1))
+plot(ml_nni); plot_axes()
+plot(ml_nni, "c", FALSE); plot_axes()
+plot(ml_nni, "u"); plot_axes()
+plot(ml_nni, "f"); plot_axes()
+box("outer")
 ```
+
+If you want to fine-tune your trees, play with the parameter `mpar` (margin around the plot).
+
+What variables are shown on the axes? 
+
+What is the unit on the axes?
+
+You can choose which tree format is the most legible for you and use it for plotting.
