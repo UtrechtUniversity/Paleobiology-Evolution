@@ -52,7 +52,7 @@ You can download datasets using [the web interface](https://paleobiodb.org/class
 
 ```{r download the occurrences}
 Pteridophyta <- pbdb_occurrences(
-  base_name = "Pteridophyta",
+  base_name = "Graptolithina",
   show = c("coords", "classext"),
   vocab = "pbdb",
   limit = "all"
@@ -68,7 +68,7 @@ Make a graph showing the genus richness of Pteridophyta over time.
 ```{r genus richness automatic}
 #| fig-cap: "Genus richness of Pteridophyta"
 pbdb_richness(Pteridophyta, 
-              rank = "species", 
+              rank = "genus", 
               temporal_extent = c(0, 540), 
               res = 20)
 ```
