@@ -1,0 +1,214 @@
+---
+title: "Geometric morphometrics"
+author: "Emilia Jarochowska"
+format: docx
+execute: 
+  eval: false
+---
+
+# Introduction
+
+For this practical, you need to install the package `geomorph` (Baken et al. 2021; Adams et al. 2024).
+
+Please make a new folder for files for this practical and create a new project in R Studio in this folder (File -> New Project...). **Within** that folder, create a subfolder `images` and copy all photos there. If you are feeling rebellious and want to put your photos somewhere else, change the path in the script accordingly. You don't need to know the names of all bones, but you can mark the landmarks on a drawing. Use [Mammal skull anatomy](https://berkeley.pressbooks.pub/morphology/chapter/mammal-skulls/) - please focus on placental mammals.
+
+# Defining landmarks
+
+Examine the skulls and write down what landmarks you are planning to use, together with their definitions. A definition is a decription of how to find the landmark, so you or another person from your group can find it later.
+
+### How many landmarks should you have?
+
+That is usually determined by the complexity of the organism you study. Skulls are quite complex and have a lot of bones, so you would need a lot of landmarks to capture all the differences. Like with a character matrix in phylogenetics, you want to focus on the ones that are different between the skulls, but also as few as are necessary: no need to set 6 landmarks to outline a triangular structure if 3 already fully capture it. Use common sense: like with the character matrix, you will likely have to go back and change your landmarks after the first try!
+
+### How to choose a good landmark?
+
+We ask you to only use Type 1 landmarks. With skulls it is perfectly possible. Other types of landmarks are necessary if you have curved structures with few distinct points, e.g. bivalve shells or crustacean carapaces.
+
+### Before you start
+
+1. All images should have the same orientation (flip if necessary)
+
+2. The landmarks must be placed **in the same order** on each image
+
+3. All landmarks should be present. If a landmark is missing (e.g. broken in a fossil), you have the choice to press `a` (for *absent*) if you're using `geomorph` (as shown in the lecture)
+
+## Defining landmarks in R
+
+```{r}
+library(geomorph)
+geomorph::digitize2d(list.files("images", full.names = T),
+nlandmarks=7,
+scale = 10,
+tpsfile = "landmarks.tps",
+verbose = TRUE
+)
+```
+
+## Problems in R and defining landmarks in other programs
+
+On some Windows computers, defining landmarks in R Studio causes problems. Nobody knows why. Two quick solutions are:
+
+1. Try just R. Not R Studio. R Studio is just a graphical interface, whereas the code is actually ran by R. Find R on your computer and run the script there.
+
+2. Use a different program. One option is tpsDIG (Windows only). It is linked on [this website](https://www.sbmorphometrics.org/index.html) along with some more obscure software packages. The other option is `Fiji`, which is a FOSS (Free and Open Source Software) powerful package with many tools for image processing. You can download it [here](https://fiji.sc/) and follow [the instruction on how to place landmarks](https://drive.google.com/file/d/1HbUCXBqPuyJqzxoBcwGVPe9LBUuf995-/view).
+
+# Analyzing the landmarks
+
+If you have successfully generated a file `landmarks.tps` in your project folder, you can read it into `geomorph`:
+
+```{r import landmarks}
+landmarks <- geomorph::readland.tps("landmarks.tps", 
+                                    specID = "ID", 
+                                    readcurves = FALSE, 
+                                    warnmsg = TRUE)
+```
+
+## Procrustes analysis
+
+```{r procrustes}
+landmarks.gpa<-geomorph::gpagen(landmarks)
+plot(landmarks.gpa)
+```
+
+## Adding links between landmarks (optional)
+
+So far the landmarks are just points on a plane. If you would like to connect them with lines to get a better visualization, you can tell the program which points should be connected with a line ("link"). It will make for nicer plots, but you can skip this step. Not all landmarks must be connected with links.
+
+Once you are finished with adding the landmarks, click "Finish" in the top right corner of the plot window.
+
+```{r links}
+landmarks.gpa$links <- geomorph::define.links(landmarks.gpa$coords[,,1])
+```
+
+## Plotting the variation between specimens
+
+See the dispersion between the specimens:
+
+```{r}
+geomorph::plotAllSpecimens(landmarks.gpa$coords,
+                 links = landmarks.gpa$links)
+```
+
+the `links = landmarks.gpa$links` line only works if you have defined the links, otherwise remove it.
+
+## Principal Component Analysis (PCA)
+
+Imagine all skull shapes as a cloud of points in the morphospace. The cloud is probably not spherical - some aspect of shape (such as snout lenght) vary more between the skulls, and some vary very little (e.g. shape of the orbs). PCA finds the axis across the cloud of points along which variation is the highest and rotates the cloud so that we count this dimension as the first one (Principal Component 1). Once the direction of the largest variation is accounted for, PCA find the direction of the second largest variation (spread) in the cloud of points and labels this direction as the second (Principal Component 2). This is repeated until all variation in the shapes is assigned to a variable (Principal Component). 
+
+Principal Components (PCs) are all orthogonal to each other. So we can plot a projection of the cloud onto a plane by e.g. making a scatterplot of how shapes are oriented with respect to PC1 and PC2, or PC2 and PC3. We could plot more PCs at once, but that would be a plot with more than 2 dimensions and that's not very legible, so usually it is easier to look at separate scatterplots.
+
+```{r PCA}
+PCA <- geomorph::gm.prcomp(landmarks.gpa$coords) 
+```
+
+Do you see any obvious groups (clusters)? Are there any shapes that stand out from the others?
+
+This is hard to tell when points are not labeled so let's create a plot where all skulls are labeled (assuming that you named the files correctly).
+
+### PC1 and PC2
+
+You can make a simple plot of the result:
+
+```{r}
+plot(PCA)
+```
+The percentages next to the axes correspond to the proportion of shape variation in the entire dataset explained by the component. The higher the value, the more informative the morphospace.
+
+You can see the proportion of variance explained as follows:
+
+```{r summary of PCA}
+summary(PCA)
+```
+How much of the variance do the first two components explain together? Ideally, it should be above 50%. 
+
+You can also make the plot manually and label all specimens:
+
+```{r PC1 and PC2 with labels}
+plot(PCA$x[,1], PCA$x[,2],
+     pch = 16,
+     xlab = "PC 1",
+     ylab = "PC 2"
+)
+text(x = PCA$x[,1],
+     y = PCA$x[,2],
+     labels = dimnames(landmarks.gpa$coords)[[3]],
+     pos = 1,
+     cex = 0.7
+     )
+```
+
+# Interpretation of the morphospace
+
+In order to understand how shapes differ in the morphospace, it may be useful to see what is the **average** shape across all skulls. Of course, it does not correspond to any actual animal.
+
+```{r mean shape}
+meanshape <- mshape(landmarks.gpa$coords)
+plot(meanshape)
+```
+
+## PC1
+
+Once you have the mean shape, you can visualize what are the shape components represented in the plot. I.e. what are the extreme shapes along which the variation is the largest.
+
+```{r PC1 interpretation}
+par(mfcol = c(1, 2),
+    mai = c(0, 0, 0, 0))
+plotRefToTarget(
+  meanshape,
+  PCA$shapes$shapes.comp1$min,
+  method = "vector",
+  mag = 2
+)
+
+plotRefToTarget(
+  meanshape,
+  PCA$shapes$shapes.comp1$max,
+  method = "vector",
+  mag = 2
+)
+```
+
+The left plot is the shape corresponding to the leftmost end of the morphospace, the right plot corresponds to the rightmost end of the morphospace. These are end members of PC1, so the axis of the largest variation in the morphospace. It indicates therefore, in what aspect of the shape is there the largest variation across all skulls. Can you write down what aspect of the shape is represented by PC1?
+
+Now make the same operation of PC2 to understand what aspect of shape is represented there:
+
+```{r PC2 interpretation}
+par(mfcol = c(1, 2),
+    mai = c(0, 0, 0, 0))
+plotRefToTarget(
+  meanshape,
+  PCA$shapes$shapes.comp2$min,
+  method = "vector",
+  mag = 2
+)
+
+plotRefToTarget(
+  meanshape,
+  PCA$shapes$shapes.comp2$max,
+  method = "vector",
+  mag = 2
+)
+```
+
+Again, can you write down what aspect of shape is represented by PC2?
+
+# Summarizing your findings
+
+Each group's morphospace will be different. But perhaps you can see patterns:
+
+1. Does the variation reflect evolutionary proximity (close relationship) or ecology? Evolutionary proximity would mean: rodents and primates forming separate clusters. Ecological similarity would mean e.g. herbivores clustering together and omnivores forming a separate group. 
+
+2. Which parts of the morphospace are not occupied? You can generate a shape in the morphospace corresponding to a given position and see what such a skull would look like (code for this is provided below). Is this skull possible? Is there perhaps an animal wich such a skull that you haven't sampled or is such a skull very unlikely?
+
+Function for visualizing shapes in the morphospace that have not been observed is shown below. Please note that this is an interactive function so you need to observe the questions that appear in the console (bottom left window in R Studio) and answer them in order to proceed. 
+
+```{r visualize shapes that are not realized}
+pcaplot <- plot(PCA)
+picknplot.shape(pcaplot)
+```
+
+# References
+
+- Baken E, Collyer M, Kaliontzopoulou A, Adams D (2021). “geomorph v4.0 and gmShiny: enhanced analytics and a new graphical interface for a comprehensive morphometric experience.” _Methods in Ecology and Evolution_, *12*, 2355-2363.
+
+- Adams D, Collyer M, Kaliontzopoulou A, Baken E (2024). “Geomorph: Software for geometric morphometric analyses. R package version 4.0.8.” <https://cran.r-project.org/package=geomorph>.
