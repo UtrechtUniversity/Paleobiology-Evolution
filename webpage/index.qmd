@@ -1,0 +1,27 @@
+---
+title: "Paleobiology & Evolution: Computer Practicals"
+author: "Emilia Jarochowska"
+---
+
+## Welcome
+
+This website contains computer practicals for the Paleobiology & Evolution course at Utrecht University.
+
+## Available Practicals
+
+### [Geometric Morphometrics](practicals/geometric_morphometrics.qmd)
+Learn to analyze shape variation using geometric morphometric techniques.
+
+### [Global Diversity](practicals/global_diversity_python.qmd) (Python) | [R version](practicals/global_diversity_r.qmd)
+Explore patterns of biodiversity through time and space using computational approaches.
+Available in both Python and R versions.
+
+### [Phylogenetic Tree Reconstruction](practicals/phylogenetic_tree.qmd)
+Build and analyze phylogenetic trees to understand evolutionary relationships.
+
+### [Diversity Partitioning](practicals/diversity_partitioning.qmd)
+Learn methods for partitioning biodiversity across different spatial scales.
+
+## About
+
+These practicals are part of the Paleobiology & Evolution course. For more information, visit the [course repository](https://github.com/UtrechtUniversity/Paleobiology-Evolution).

@@ -1,0 +1,42 @@
+project:
+  type: website
+  output-dir: _site
+  resources:
+    - "practicals/img/**"
+    - "practicals/data/**"
+
+execute:
+  freeze: auto
+  eval: false
+
+website:
+  title: "Paleobiology & Evolution Practicals"
+  navbar:
+    background: primary
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "Practicals"
+        menu:
+          - text: "Geometric Morphometrics"
+            href: practicals/geometric_morphometrics.qmd
+          - text: "Global Diversity (Python)"
+            href: practicals/global_diversity_python.qmd
+          - text: "Global Diversity (R)"
+            href: practicals/global_diversity_r.qmd
+          - text: "Phylogenetic Tree Reconstruction"
+            href: practicals/phylogenetic_tree.qmd
+          - text: "Diversity Partitioning"
+            href: practicals/diversity_partitioning.qmd
+    right:
+      - icon: github
+        href: https://github.com/UtrechtUniversity/Paleobiology-Evolution
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    code-tools: true

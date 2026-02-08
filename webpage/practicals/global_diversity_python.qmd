@@ -1,0 +1,324 @@
+---
+title: "Global plant diversity (Python)"
+author: "Rike Wagner-Cremer, Iris Kuipers and Emilia Jarochowska"
+engine: markdown
+---
+
+In this exercise we like to explore the diversity of the major groups of vascular plants through time. An early attempt at describing it has been made by the super-prolific giant of (paleo)botany, Karl Niklas. You will hear about him in this course again. 
+
+![Large-scale changes in diversity of tracheophytes at the species- and family-level (upper and lower panels, respectively) recorded per epoch through the Phanerozoic.](img/Niklas_1.jpg)
+
+We are asking the question if the data in PBDB is complete enough to obtain the same overall trend. Here we will ignore the early vascular plants and focus on Pteridophytes, Gymnosperms and Angiosperms.
+
+## Objectives
+
+After this practical, you will be able to:
+
+*paleobiology skills*
+
+- Create a diversity (richness) plot for a given taxon
+
+- Explain the limitations of fossil data in calculating past diversity
+
+- Assess how factors such as sampling effort, taxonomic and temporal resolution affect diversity analyses
+
+*data skills*
+
+- read in functions and apply them to new datasets
+
+- present several variables in one plot
+
+### Analysing Pteridophyta
+
+In this practical, you will analyse [Pteridophyta](https://en.wikipedia.org/wiki/Pteridophyte), [Pinophyta](https://en.wikipedia.org/wiki/Conifer) and [Magnoliophyta](https://en.wikipedia.org/wiki/Flowering_plant). The examples below will guide you through the analysis for Pteridophyta. Afterwards, you will do the same analysis for the other two divisions.
+
+### Requirements
+
+You will need to install `pandas`, `matplotlib` and `numpy`. Install them using `pip`, `conda` or any other method you are familiar with.
+
+Some tips:
+
+- When copying the code, remember that Python is very sensitive to whitespace (indentation): if you skip a space or tab, it may break the code.
+
+- Don't run the code directly in Python console (also called REPL). Write it in a script, e.g. in Spyder or Jupiter Notebook, so you can go back to previous commands. It is good practice (e.g. for a thesis, but also at a workplace) to keep a record of your analysis in a saved script. 
+
+- In this document, `import` statements are listed only the first time a package is used. If you runt the commands in a different order, you might need to add the `import` statement somewhere else
+
+## Downloading data from the Paleobiology Database
+
+You can download datasets using [the web interface](https://paleobiodb.org/classic/displayDownloadGenerator). You can click through the options, but that is not very reproducible: chances are different people would choose different options. It is safer to share [a link with the details of the query to the database](https://paleobiodb.org/data1.2/occs/list.csv?base_name=Pteridophyta&taxon_reso=genus). Download the linked file, rename it to `Pteridophyta_occurrences.csv` and place it in the `data` folder.
+
+```{python}
+import pandas as pd
+Pteridophyta = pd.read_csv("data/Pteridophyta_occurrences.csv")
+```
+
+Take a look at the data you have downloaded. What are the rows? Where is the age of each fossil? Where was it found?
+
+## 1. Genus richness through time	
+
+Make a graph showing the genus richness of Pteridophyta over time. If you looked at the dataset, you will see that some fossils are identified at the species and some at the genus level. Can you think of a reason for it?
+
+### 1.a. How to deal with records at different taxonomic levels?
+
+A lot of the time fossils cannot be identified to the species level. Also the concept of species in some groups is not clear. So many analyses rely on the genus level.
+
+Look into the dataframe with the occurrences. Some are observations at the species level, some at the genus level. If you want to analyze richness at the genus level, you have to *somehow* include also those occurrences which had been made at the species level and discard the species name. E.g. one of the occurrences is *Metaclepsydropsis duplex*. You still want to count it, but as *Metaclepsydropsis*.
+And you still have to consider that some occurrences are of different taxonomic ranks!
+
+```{python}
+Pteridophyta['accepted_rank'].unique()
+```
+
+
+```{python}
+def species_to_genera(df):
+    """
+    Add a new column 'genus_name' to the df:
+    If 'accepted_rank' is 'genus, 'genus_name' is same as 'accepted_name'
+    Else 'genus_name' is the first word of 'accepted_name'
+
+    Parameters:
+        df (pd.DataFrame): Input PBDB df with columns 'accepted_rank' and 'accepted_name'.
+
+    Returns:
+        pd.DataFrame: df with the new column 'genus_name'.
+    """
+
+    df['genus_name'] = df.apply(
+        lambda row: row['accepted_name'].split()[0] if row['accepted_rank'] != "genus" else row['accepted_name'], 
+        axis=1
+    )
+    return df
+```
+
+Now you can apply this function to your dataset:
+
+```{python}
+Pteridophyta = species_to_genera(Pteridophyta)
+```
+
+So now your analysis will use all the available records which *include* information about the genus.
+
+### 1.b. Calculating genus richness
+
+Now that genera are extracted, you can calculate how many genera occur at each time bin, with time bins being specified by you:
+
+```{python}
+import numpy as np
+
+def pbdb_richness(df, bin_size):
+    """
+    Generate a dataframe with the number of genera in each time bin.
+
+    Parameters:
+        df (pd.DataFrame): Input dataframe with columns: 'genus_name', 'min_ma', 'max_ma'.
+        bin_size (float): Duration of each time bin in Ma.
+
+    Returns:
+        pd.DataFrame: df with columns: 'bin_start', 'bin_end', 'num_genera'.
+    """
+
+    max_ma = df['max_ma'].max()
+    min_ma = df['min_ma'].min()
+    bins = np.arange(max_ma, min_ma - bin_size, -bin_size)
+    bin_edges = [(bins[i], bins[i+1]) for i in range(len(bins) - 1)]
+    
+    result = []
+    
+    for bin_start, bin_end in bin_edges:
+        genera_in_bin = df[
+            (df['max_ma'] >= bin_end) &  
+            (df['min_ma'] <= bin_start)  
+        ]
+        
+        unique_genera = genera_in_bin['genus_name'].nunique()
+        
+        result.append({
+            'bin_start': bin_start,
+            'bin_end': bin_end,
+            'num_genera': unique_genera
+        })
+    
+    return pd.DataFrame(result)
+```
+
+Apply this function:
+
+```{python}
+Pteridophyta_rich = pbdb_richness(Pteridophyta, 20)
+```
+
+And plot the output:
+
+```{python}
+import matplotlib.pyplot as plt
+
+# Create the bin_mid column (midpoint of each time bin)
+Pteridophyta_rich['bin_mid'] = (Pteridophyta_rich['bin_start'] + Pteridophyta_rich['bin_end']) / 2
+
+plt.figure()
+plt.plot(Pteridophyta_rich['bin_mid'], Pteridophyta_rich['num_genera'], marker='o', linestyle='-', color='blue', label='Genera count')
+
+plt.gca().invert_xaxis()  # Reverse x-axis for geological time (older to younger)
+plt.xlabel('Time (Ma)', fontsize=12)
+plt.ylabel('Number of genera', fontsize=12)
+plt.title('Pteridophyta generic richness', fontsize=14)
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+What happens if you change the parameter `res` (temporal resolution)? How do you decide which resolution is the best?
+
+How can you make this graph more attractive? Does it make sense to check pteridophyte occurrences 600 Ma? What geochronological period was it?
+
+## 2. How precisely do we know the age of a fossil occurrence?
+
+To understand the nature of occurrence data, check in the dataframe how age information is provided. Which variables contain it? 
+
+Calculate the duration of each occurrence by creating a new variable named `occ_duration`:
+
+```{python}
+def calculate_duration(df):
+    df['occ_duration'] = df['max_ma'] - df['min_ma']
+    return df
+```
+
+Once you have this variable, find out what is the average, minimal and maximal time span of all occurrences? In other words, how *precise* is the age information for each occurrence?
+
+Apply the function to the dataset:
+
+```{python}
+Pteridophyta = calculate_duration(Pteridophyta)
+```
+
+What is the average time span of an occurrence in the dataset? Does it mean the fossil lived for so long? Why are some durations so extremely long, i.e. having very low precision? If you were to cull the dataset to eliminate the most imprecisely dated occurrences, what precision would you accept as good?
+
+Bonus exercise (we don't provide the code for it but it is easy to find in [`matplotlib` documentation](https://matplotlib.org/stable/gallery/statistics/hist.html)): make a histogram of occurrence durations.
+
+## 3. How is richness calculated?
+
+In each consecutive time bin, a given taxon may be observed or not. If there are not many outcrops of rocks of given age on Earth, this age may yield no occurrences even though the organism existed. 
+
+Check how the occurrences are distributed in time for a genus of your choice.
+
+You will encounter the problem: what time should you assign the occurrence to? You could plot it across the entire duration in which the given occurrence is recorded or use the mid-point (between minimum and maximum age) as the time coordinate.
+
+```{python}
+selected_genus = "Deltoidospora"
+Deltoidospora_df = Pteridophyta.loc[Pteridophyta['genus_name'] == selected_genus]
+```
+
+Function for plotting age ranges:
+
+```{python}
+def plot_age_ranges(df):
+    fig, ax = plt.subplots()
+
+    for _, row in df.iterrows():
+        ax.hlines(y=row['occ_duration'], xmin=row['min_ma'], xmax=row['max_ma'])
+
+    ax.set_xlabel('Age [Ma]')
+    ax.set_ylabel('Occurrence')
+    ax.set_title('Distribution of occurrences')
+
+    plt.show()
+```
+
+What can you see on this plot? Are the occurrences well resolved in terms of time or poorly? Are there any occurrences with suspicious ages, e.g. when pteridophytes didn't exist?
+Are there any times when this genus had not been found, but existed before and after? Is this possible? What could cause such distribution? 
+
+**Make such plots for four more genera, choosing two that are very common and two that are rare.**
+
+### 3.a. Dealing with temporal resolution 
+
+Genus richness is calculating by summing occurrences recorded in a given time bin. But now you have seen that some occurrences are fond in a very wide time bins and some in narrow ones. So how do you compare occurrences with imprecise age information and with a precise one?
+
+The answer is: [interpolation](https://en.wikipedia.org/wiki/Interpolation). Look at your first plot. The horizontal axis is divided into equal intervals and when you change the temporal resolution, the richness is recalculated to the new resolution. So you can request a plot with a temporal resolution of 2 My, but now you have seen that **most of your occurrence data does not have such a resolution**. So if you don't keep that in mind, you can create a plot that looks very precise, but it is based on imprecise data.
+
+In interpolation, the time axis is divided into even intervals and the *density* of occurrences calculated from the durations of each occurrence is sampled so that you have one value of richness at each interval. 
+
+So what is an honest temporal resolution at which you should analyse richness? Go back to chapter 2 above and find the **average duration** of an occurrence in your dataset. This is a reasonable candidate for temporal resolution of your analysis. Is it higher or lower than what you have used in your first plot?
+
+### 3.b. Dealing with sampling issues
+
+In the example where you saw occurrence durations of *Deltoidospora*, there were intervals when it had not been recorded. But of course it must have existed on Earth. There is a difference between genera that have been entered into the database and genera that are not in the database at that time, but should have been present at that time. There are terms specific to these two situations:
+
+1. **sampled in bin**: only occurrences that are really recorded in this interval in the database
+2. **range-through**: occurrences (and stratigraphic ranges) where the taxon is *inferred* to have existed even though it had not been found or entered into the database so far.
+
+Range-through richness analysis assumes that a taxon is present in all bins between its first and last occurrence in the database.
+
+Make a plot of richness of *Deltoidospora* using the function `pbdb_richness` and compare it with the plot you made for the duration of its occurrences.
+
+Is this plot showing sampled in bin richness or range-through richness?
+
+## 4. Sampled in bin richness
+
+You could calculate which genera should be present but are not sampled from the dataset you downloaded, but it would involve a lot of coding. The Paleobiology Database has tools to perform common calculations for you.
+In the Download page you can select the type of data you want to download. To get diversity data for Pteridophyta at the genus level and the temporal resolution of a geochronological age, use [this link](https://paleobiodb.org/data1.2/occs/diversity.csv?base_name=Pteridophyta&count=genera). Save the resulting file as `pbdb_data.csv` in the `data` folder where you are carrying out this analysis.
+**Do not open it in Excel** as this program can distort some information.
+
+```{python}
+Pteridophyta_div = pd.read_csv("data/pbdb_data.csv")
+```
+
+Look at this new dataset. What are rows? What columns are provided?
+
+There are a few columns with mysterious names. If you **really** need to know what these symbols are, you can find it in the rather technical article by [Foote (2000)](https://www.cambridge.org/core/services/aop-cambridge-core/content/view/7FE12B43106FC20C9AFC4031F72A56F9/S0094837300026890a.pdf/origination-and-extinction-components-of-taxonomic-diversity-general-problems.pdf). For this practical you are concerned with the column `X_bt`, which is the number of taxa *inferred* to range though (i.e. which existed but had not been sampled).
+To get range-through richness, add the variables `X_bt`, `sampled_in_bin` and `implied_in_bin`.
+
+Make a plot of Pteridophyta genus richness, comparing sampled in bin and range through richness. Use the mid-point of each age as the time coordinate.
+
+```{python}
+def calc_midpoint(df):
+    df['age'] = df['min_ma'] + (df['max_ma'] - df['min_ma'])/2
+    return df
+```
+
+Apply this function to the dataset:
+
+```{python}
+Pteridophyta_div = calc_midpoint(Pteridophyta_div)
+```
+
+Plot the results:
+
+```{python}
+plt.figure()
+plt.plot(Pteridophyta_div['age'], 
+Pteridophyta_div['sampled_in_bin']+Pteridophyta_div['X_bt']+Pteridophyta_div['implied_in_bin'], 
+marker='o', linestyle='-', 
+color='red', 
+label='Range through richness')
+plt.plot(Pteridophyta_div['age'], 
+Pteridophyta_div['sampled_in_bin'], 
+marker='o', linestyle='--', 
+color='blue', 
+label='Sampled in bin richness')
+
+plt.gca().invert_xaxis()  # Reverse x-axis for geological time (older to younger)
+plt.xlabel('Time (Ma)', fontsize=12)
+plt.ylabel('Number of genera', fontsize=12)
+plt.title('Pteridophyta generic richness', fontsize=14)
+plt.legend()
+plt.grid(True)
+plt.show()
+```
+
+## 6. Calculate the genus richness for Pinophyta and Magnoliophyta
+
+You now understand the nature of fossil occurrence data. It has gaps and the age is not always known precisely. But will it be better for larger groups of plants?
+
+- Create a graph in which sampled in bin and range-through genus richness is shown as two different lines in the same plot. Make this plot for each of the two groups. 
+
+- This plot uses mid-point age of each geochronological age. These ages have uneven durations: some are very short (e.g. Ludfordian), some are long (e.g. Famennian). How does this affect the richness plot?
+
+- Which of these two groups is more evenly sampled in the database?
+
+- Calculate the average duration across genus occurrences in both groups. If they are different, why might it be?
+
+## References
+
+- Niklas, Karl J. "[Patterns of vascular plant diversification in the fossil record: proof and conjecture.](https://www.jstor.org/stable/pdf/2399465.pdf)" Annals of the Missouri Botanical Garden (1988): 35-54.

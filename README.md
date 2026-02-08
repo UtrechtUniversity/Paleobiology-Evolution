@@ -42,4 +42,4 @@ ORCID: [0000-0001-8937-9405](https://orcid.org/0000-0001-8937-9405)
 
 ### Copyright
 
-Copyright 2025 Utrecht University
+Copyright 2025-2026 Utrecht University
