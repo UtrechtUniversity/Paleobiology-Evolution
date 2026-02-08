@@ -18,14 +18,14 @@ website:
         href: index.qmd
       - text: "Practicals"
         menu:
-          - text: "Geometric Morphometrics"
-            href: practicals/geometric_morphometrics.qmd
           - text: "Global Diversity (Python)"
             href: practicals/global_diversity_python.qmd
           - text: "Global Diversity (R)"
             href: practicals/global_diversity_r.qmd
           - text: "Phylogenetic Tree Reconstruction"
             href: practicals/phylogenetic_tree.qmd
+          - text: "Geometric Morphometrics"
+            href: practicals/geometric_morphometrics.qmd
           - text: "Diversity Partitioning"
             href: practicals/diversity_partitioning.qmd
     right:
