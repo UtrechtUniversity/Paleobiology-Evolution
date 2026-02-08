@@ -1,0 +1,115 @@
+---
+title: "Diversity partitioning lab"
+author: "Emilia Jarochowska"
+format: html
+---
+
+## Overview
+
+You will analyze fossil assemblages from samples collected along an environmental gradient to understand how diversity is distributed across spatial scales. There are different environmental gradients governing the distribution of organisms, depending of environment or spatial scale. For example, in mountainous areas the altitude is the most important factor driving the distribution of plant assemblages. At the scale of a sedimentary basin, bathymetry (water depth) is the most important gradient (also called *cline*) behind the composition of animal communities and the overall diversity (see Figure 4.16 in the textbook).
+
+------------------------------------------------------------------------
+
+## Part 1: Data Collection
+
+For each sample: 1. Sort fossils into morphotypes based on observable features (shell shape, ornamentation). 2. Name each morphotype up to the nearest taxonomic unit you can recognize, e.g. "brachiopod A", "brachiopod B" etc. 3. Record the number of individuals per morphotype in a data table
+
+| Sample | Morphotype   | Count |
+|--------|--------------|-------|
+| 1      | Brachiopod A | 15    |
+| 1      | Brachiopod B | 8     |
+| ...    | ...          | ...   |
+
+Please note this table is in the **tidy** format. If you have followed the *Data and Statistics* course for Geoscience students, you already know why this is useful. Otherwise please take a look at the [explanation](https://utrechtuniversity.github.io/UU_BSc_Geosciences_Data2/05_DataWrangling/tidyData.html).
+
+## Part 2: Diversity Metrics
+
+You can made the calculations below using any software of your choice: Python, R, Excel.
+
+### Diversity partitioning
+
+#### Alpha Diversity (α)
+
+**Within-sample diversity.** Calculate for each sample two of common measures of alpha diversity:
+
+1.  **Species richness (S):** Number of morphotypes in the sample
+
+2.  **Margalef's diversity index:** $$D_{Mg} = \frac{S - 1}{\ln N}$$ where *N* = total number of individuals in the sample
+
+Reflection question: Margalef's diversity corrects for sample size. Is this important for your dataset? What would happen if we had samples with different *N*s but did not correct for it?
+
+#### Beta Diversity (β)
+
+**Between-sample diversity.** Measures turnover along the gradient:
+
+$$\beta = \gamma / \bar{\alpha} - 1$$
+
+where γ = total richness across all samples, ᾱ = mean alpha diversity (one of the two metrics you calculated in the previous step - you decide if the correction for sample size is relevant)
+
+**Hint:** Higher β indicates greater compositional change between samples.
+
+#### Gamma Diversity (γ)
+
+**Total diversity across all samples:** Count unique morphotypes across the entire dataset.
+
+### Beyond just counting taxa: how is diversity distributed in your sample?
+
+See box 4.2 in the textbook for a discussion of these metrics.
+
+#### Evenness (J')
+
+**How equally abundant are species?**
+
+$$J' = \frac{H'}{\ln S}$$
+
+where *H'* is Shannon diversity: $$H' = -\sum_{i=1}^{S} p_i \ln p_i$$
+
+and $p_i$ = proportion of individuals belonging to morphotype *i*.
+
+Careful: you will have to convert counts to proportions (fraction of the total number of individuals)!
+
+*J'* ranges from 0 to 1; higher values = more even distribution.
+
+#### Dominance (D)
+
+**To what extent is the assemblage dominated by common species?**
+
+$$D = \sum_{i=1}^{S} p_i^2$$
+
+Higher values indicate dominance by few taxa.
+
+------------------------------------------------------------------------
+
+## Part 3: Rank-Abundance Distributions
+
+1.  For each sample, rank morphotypes from most to least abundant
+2.  Plot rank (x-axis, log scale) vs. abundance (y-axis, log scale)
+3.  Compare curve shapes across samples:
+    -   **Steep slope:** High dominance, low evenness
+    -   **Gentle slope:** High evenness
+    -   **Long tail:** High richness with many rare species
+
+------------------------------------------------------------------------
+
+## Part 4: Analysis Questions
+
+You do not need to upload the answers, but make sure to think about them, because it will help you at the exam.
+
+1.  How does alpha diversity change along the environmental gradient?
+2.  Which sample shows the highest evenness? What might this indicate ecologically?
+3.  What does your beta diversity value tell you about the gradient?
+4.  Do rank-abundance patterns correlate with position on the gradient?
+
+## What you need to upload
+
+Upload a graphical representation (plot, drawing, artwork - up to you) of the changes in all diversity metrics across the onshore-offshore gradient.
+
+------------------------------------------------------------------------
+
+**Software Tips:**
+
+-   **Excel:** Use pivot tables for summary statistics
+
+-   **Python and R** Write your diversity metrics as functions, then you can apply the same function to consecutive samples. This will make your code legible, compact, and allow you finding problems and correcting your calculations faster
+
+-   **R:** Watch out for the correct decimal separator when importing your data into R. Generally you should not encounter this problem, because your counts should be integers, not fractions. You can use the function `diversity()` from the `vegan` package to check your calculations
