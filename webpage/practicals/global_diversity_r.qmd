@@ -50,7 +50,7 @@ You can download datasets using [the web interface](https://paleobiodb.org/class
 
 ```{r download the occurrences}
 Pteridophyta <- pbdb_occurrences(
-  base_name = "Graptolithina",
+  base_name = "Pteridophyta",
   show = c("coords", "classext"),
   vocab = "pbdb",
   limit = "all"
