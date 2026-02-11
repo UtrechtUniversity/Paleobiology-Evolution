@@ -40,3 +40,9 @@ format:
     toc-depth: 3
     code-fold: false
     code-tools: true
+    code-overflow: wrap
+    code-tools: true
+    code-block-bg: true
+    code-block-border-left: "#31BAE9"
+    highlight-style: arrow
+
