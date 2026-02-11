@@ -1,7 +1,6 @@
 ---
 title: "Diversity partitioning lab"
 author: "Emilia Jarochowska"
-engine: markdown
 ---
 
 ## Overview

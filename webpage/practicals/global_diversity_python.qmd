@@ -1,7 +1,6 @@
 ---
 title: "Global plant diversity (Python)"
 author: "Rike Wagner-Cremer, Iris Kuipers and Emilia Jarochowska"
-engine: markdown
 ---
 
 In this exercise we like to explore the diversity of the major groups of vascular plants through time. An early attempt at describing it has been made by the super-prolific giant of (paleo)botany, Karl Niklas. You will hear about him in this course again. 

@@ -1,7 +1,6 @@
 ---
 title: "Phylogenetic tree of sea urchins"
 author: "Emilia Jarochowska"
-engine: markdown
 ---
 
 ## Preparation
