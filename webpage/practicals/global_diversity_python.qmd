@@ -311,7 +311,7 @@ plt.show()
 
 You now understand the nature of fossil occurrence data. It has gaps and the age is not always known precisely. But will it be better for larger groups of plants?
 
-- Create a graph in which sampled in bin and range-through genus richness is shown as two different lines in the same plot. Make this plot for each of the two groups. 
+- Create a graph in which sampled in bin and range-through genus richness is shown as two different lines in the same plot. Make this plot for each of the two groups. **Remember that you need to download a new file from the PBDB like you did for Pteridophyta above (point 4), not use the occurrence dataset downloaded at the beginning of the practical**.
 
 - This plot uses mid-point age of each geochronological age. These ages have uneven durations: some are very short (e.g. Ludfordian), some are long (e.g. Famennian). How does this affect the richness plot?
 
