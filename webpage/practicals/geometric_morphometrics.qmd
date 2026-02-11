@@ -1,7 +1,6 @@
 ---
 title: "Geometric morphometrics"
 author: "Emilia Jarochowska"
-engine: markdown
 ---
 
 # Introduction
