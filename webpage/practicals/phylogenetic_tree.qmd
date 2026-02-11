@@ -9,11 +9,15 @@ author: "Emilia Jarochowska"
 
 2. In the folder where your project is located, create a sub-folder `data`
 
-3. Save the character matrix as `character_matrix.csv` in the `data` folder
+3. Fill in the empty [`character_matrix_empty.csv`](data/character_matrix_empty.csv) with your data. Replace `Character1` etc. with informative names e.g. "Symmetry". **Aim for more characters than taxa.**
 
-4. Install the packages `phangorn` and `ape`. You will be likely asked to install some additional packages ("dependencies") - choose "yes".
+4. Write a document explaining each character and the possible state, so you can revise the characters when you see how they shape the tree (yes, you will need this!). The states can be e.g. "Symmetry: 0. Five-fold, 1. Two-fold, 2. Asymmetrical" (this is just an example)
 
-5. Create a new script using File -> New File -> R Script, where you will put all the steps of the analysis. Save it in the project folder.
+5. Save the character matrix as `character_matrix.csv` in the `data` folder
+
+6. Install the packages `phangorn` and `ape`. You will be likely asked to install some additional packages ("dependencies") - choose "yes".
+
+7. Create a new script using File -> New File -> R Script, where you will put all the steps of the analysis. Save it in the project folder.
 
 ## Tree estimation
 
@@ -133,7 +137,7 @@ layout(matrix(1:4, 2, 2, byrow = TRUE))
 par(xpd = TRUE,
     mar = c(2.5, 2.5, 1, 1))
 plot(ml_nni); plot_axes()
-plot(ml_nni, "c", FALSE); plot_axes()
+plot(ml_nni, "c"); plot_axes()
 plot(ml_nni, "u"); plot_axes()
 plot(ml_nni, "f"); plot_axes()
 box("outer")
@@ -146,3 +150,5 @@ What variables are shown on the axes?
 What is the unit on the axes?
 
 You can choose which tree format is the most legible for you and use it for plotting.
+
+**Submit this plot as your final assignment result on Brightspace**
