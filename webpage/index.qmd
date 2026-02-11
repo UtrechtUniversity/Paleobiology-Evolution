@@ -25,3 +25,10 @@ Learn methods for partitioning biodiversity across different spatial scales.
 ## About
 
 These practicals are part of the Paleobiology & Evolution course. For more information, visit the [course repository](https://github.com/UtrechtUniversity/Paleobiology-Evolution).
+
+## Copyright and license
+
+Copyright 2026 Utrecht University
+
+All content on this webpage is licensed under [Creative Commons Attribution 4.0
+International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
