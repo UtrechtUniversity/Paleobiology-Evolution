@@ -72,7 +72,6 @@ plot(start_tree)
 
 
 ```{r rooting the tree}
-tree_start <- start_tree$tree
 outgroup <- "Echinarachnius" # just an example
 rooted_start_tree <- ape::root(start_tree, 
                        outgroup, 
