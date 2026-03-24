@@ -4,6 +4,15 @@ author: "Emilia Jarochowska"
 format: html
 ---
 
+## Learning objectives
+
+After this practical, you should be able to:
+
+1. use the terms fossil assemblage, alpha, beta and gamma diversity, environmental cline, dominance, and evenness when you encounter them and when you need to describe fossil diversity in the field,
+2. calculate alpha, beta, gamma diversity, as well as dominance and evenness,
+3. create and read the rank abundance distribution and explain how it relates to evenness,
+4. explain how alpha, beta and gamma diversity are related to water depth in marine ecosystems.
+
 ## Overview
 
 You will analyze fossil assemblages from samples collected along an environmental gradient to understand how diversity is distributed across spatial scales. There are different environmental gradients governing the distribution of organisms, depending of environment or spatial scale. For example, in mountainous areas the altitude is the most important factor driving the distribution of plant assemblages. At the scale of a sedimentary basin, bathymetry (water depth) is the most important gradient (also called *cline*) behind the composition of animal communities and the overall diversity (see Figure 4.16 in the textbook).
@@ -11,6 +20,14 @@ You will analyze fossil assemblages from samples collected along an environmenta
 ------------------------------------------------------------------------
 
 ## Part 1: Data Collection
+
+### How data is provided
+
+In this practical, a **sample** is one fossil assemblage. The assemblage are all organisms that lived together in a constrained area at the same time, so we can assume they formed the same **ecosystem**. Of course with fossils there is some degree of **time-averaging**, so the fossils in your sample didn't necessarily meet: maybe they lives 1000 ky apart, but still in the same ecosystem.
+
+There are five **sets of samples**. Each set is one independent study, so please choose one set (1, 2, 3, 4 or 5). In each set, five samples have been collected along the bathymetric gradient: from shallow (sample A) to deep (sample D). You need to analyze all samples in one set and you can work in groups.
+
+### What you need to do
 
 For each sample: 1. Sort fossils into morphotypes based on observable features (shell shape, ornamentation). 2. Name each morphotype up to the nearest taxonomic unit you can recognize, e.g. "brachiopod A", "brachiopod B" etc. 3. Record the number of individuals per morphotype in a data table
 
