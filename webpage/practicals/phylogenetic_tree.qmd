@@ -2,6 +2,15 @@
 title: "Phylogenetic tree of sea urchins"
 author: "Emilia Jarochowska"
 ---
+## Learning objectives
+
+After this practical, you should be able to:
+
+1. Score anatomical characters based on organism morphology and create a character matrix
+2. Create a phylogenetic tree using the maximum likelihood method
+3. Choose a suitable outgroup and root a tree
+4. Present a tree visually using different conventions
+5. Assess how the characters you chose contribute to the tree topology
 
 ## Preparation
 
